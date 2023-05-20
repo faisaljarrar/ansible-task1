@@ -1,0 +1,47 @@
+- hosts: vm1
+  tasks: 
+  - name: Disable SELinux
+    selinux:
+      state: disabled
+  - name: install the latest version of Apache
+    yum:
+      name: httpd
+      state: latest
+
+  - name: Make sure a service is running
+    systemd:
+      state: started
+      name: httpd
+
+  - name: Make sure a service is running
+    systemd:
+      enabled: yes
+      name: httpd
+
+  - name: Download foo.conf
+    get_url:
+      url: https://www.free-css.com/assets/files/free-css-templates/download/page291/atlas.zip
+      dest: /tmp/atlas.zip
+
+  - name: Install Unzip
+    yum:
+      name: unzip
+      state: latest
+
+  - name: Extract /tmp/atlas.zip
+    unarchive:
+      src: /tmp/atlas.zip
+      dest: /tmp/
+      remote_src: yes
+
+  - name: Move templetes file to /var/www/html
+    shell: "mv /tmp/Atlas/* /var/www/html/"
+    args:
+      creates: /var/www/html/index.html
+
+  - name: Give insecure permissions to an existing file
+    file:
+      path: /var/www/html
+      owner: apache
+      group: apache
+      recurse: yes
